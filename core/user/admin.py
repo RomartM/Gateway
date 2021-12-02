@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import User
+from .models import User, Profile
 
 
 class CustomUserAdmin(UserAdmin):
@@ -18,7 +18,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (
             _("Personal Information"),
-            {"fields": ("photo", "first_name", "last_name", "contact_number", "id_number")}
+            {"fields": ("photo", "first_name", "last_name", "contact_number")}
         ),
         (
             _("Account Credential"),
@@ -72,4 +72,9 @@ class CustomUserAdmin(UserAdmin):
         return queryset
 
 
+class UserProfileAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Profile, UserProfileAdmin)
