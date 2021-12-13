@@ -22,6 +22,7 @@ urlpatterns = [
 
     # Helper paths
     path('optimizer/', include('imagefit.urls')),
+    path('media-manager/', include('core.media.urls')),
 
     # Core Apps
     path('', include('core.common.urls')),
