@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
+from core.admission.models import Admission
 from core.user.models import User
 
 
@@ -11,9 +12,15 @@ class ApplyForm(UserCreationForm):
         fields = ('email', 'password1', 'password2',)
 
 
-class Schedule(forms.Form):
-    pass
+class AdmissionForm(forms.ModelForm):
+
+    class Meta:
+        model = Admission
+        fields = ('schedule',)
 
 
-class Confirmation(forms.Form):
-    pass
+class Confirmation(forms.ModelForm):
+
+    class Meta:
+        model = Admission
+        fields = ('signature',)

@@ -4,6 +4,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from core.admission.status import AdmissionStatus
+from core.media.models import File
 from core.settings.models import Requirements
 from core.settings.academiclevel import AcademicLevel
 from core.settings.models import Semester, Location
@@ -11,25 +12,27 @@ from core.settings.utils import HistorySurveillance
 from core.user.models import User
 
 
-class Admission(HistorySurveillance):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    semester = models.ForeignKey(Semester, on_delete=models.DO_NOTHING)
-    requirements = models.ForeignKey(Requirements, on_delete=models.DO_NOTHING)
-    status = models.IntegerField(choices=AdmissionStatus.get_choices(), default=AdmissionStatus.PENDING)
-    remarks = models.TextField(blank=True)
-    updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="updated_by")
-    updated_time = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords(excluded_fields=['history_instance'])
-
-
 # TODO: Make unique schedule and location
+# Officer
 class Schedule(HistorySurveillance):
-    admission = models.ForeignKey(Admission, on_delete=models.DO_NOTHING)
     location = models.ForeignKey(Location, on_delete=models.DO_NOTHING)
     schedule = models.DateTimeField()
     duration = models.IntegerField(help_text="Duration in minutes")
     quota = models.IntegerField(help_text="Maximum number of applicants")
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
+
+
+# New Student
+class Admission(HistorySurveillance):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    semester = models.ForeignKey(Semester, on_delete=models.DO_NOTHING)
+    schedule = models.ForeignKey(Schedule, on_delete=models.DO_NOTHING)
+    signature = models.ForeignKey(File, on_delete=models.CASCADE, blank=True, null=True)
+    status = models.IntegerField(choices=AdmissionStatus.get_choices(), default=AdmissionStatus.PENDING)
+    remarks = models.TextField(blank=True)
+    updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="updated_by")
+    updated_time = models.DateTimeField(auto_now=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
