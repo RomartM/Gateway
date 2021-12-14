@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
 
     # Third Parties
     'solo',
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'import_export',
 
     # Core Apps,
+    'core.uacs',
     'core.settings',
     'core.media',
     'core.user',
@@ -92,7 +94,7 @@ TEMPLATES = [
         },
     },
 ]
-
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 WSGI_APPLICATION = 'Gateway.wsgi.application'
 
 

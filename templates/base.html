@@ -32,7 +32,7 @@
                   {% block page_pre_title %}{% endblock %}
                   {% render_breadcrumbs "django_bootstrap_breadcrumbs/bootstrap4.html" %}
                 </div>
-                <h2 class="page-title {% if request.user.is_authenticated  %}text-white{% endif  %}">
+                <h2 class="page-title">
                   {% block page_title %}{{ page_title }}{% endblock %}
                 </h2>
               </div>

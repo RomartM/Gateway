@@ -73,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
 #  YY-CC-S-00000
 class PersonalInformation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    id_number = models.CharField(max_length=11, unique=True)
+    id_number = models.CharField(max_length=11, unique=True, help_text='Readonly')
     sex_at_birth = models.CharField(choices=(
         ('m', 'Male'),
         ('f', 'Female')
@@ -99,7 +99,7 @@ class PersonalInformation(models.Model):
     street_purok = models.CharField(max_length=80, default='')
 
     has_indigenous_group = models.BooleanField(default=False)
-    indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING)
+    indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING, blank=True, null=True)
     dswd_4psNumber = models.CharField(max_length=80, default='')
     signature = models.ForeignKey(File, on_delete=models.CASCADE, blank=True, null=True)
 

@@ -1,17 +1,20 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from core.media.models import File
 from core.settings.academiclevel import AcademicLevel
+from core.settings.utils import HistorySurveillance
 
 
-class Campus(models.Model):
+class Campus(HistorySurveillance):
     code = models.IntegerField(unique=True)
     name = models.CharField(max_length=100)
     address = models.TextField()
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Course(models.Model):
+class Course(HistorySurveillance):
     name = models.CharField(max_length=100, unique=True)
     abbreviation = models.CharField(max_length=30, default='')
     description = models.TextField()
@@ -22,16 +25,18 @@ class Course(models.Model):
     quota = models.IntegerField(help_text="Maximum number applicants")
     affirmative_quota = models.IntegerField(help_text="Maximum number of affirmative applicants")
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Department(models.Model):
+class Department(HistorySurveillance):
     name = models.CharField(max_length=80, default='')
     description = models.CharField(max_length=80, default='')
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
 # TODO: Make is_active unique when true
-class Semester(models.Model):
+class Semester(HistorySurveillance):
     code = models.CharField(max_length=5)
     name = models.CharField(max_length=80)
     year = models.IntegerField()
@@ -56,36 +61,44 @@ class Semester(models.Model):
     affirmative_end = models.DateTimeField()
     is_active = models.BooleanField(default=False)
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Requirements(models.Model):
+class Requirements(HistorySurveillance):
     content = models.TextField()
     file_type = models.CharField(max_length=80)
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class MediaRequirements(Requirements):
+class MediaRequirements(HistorySurveillance):
     file = models.ManyToManyField(File)
     allowed_file_type = models.CharField(max_length=30, default='')
     max = models.IntegerField(default=1)
+    is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Strand(models.Model):
+class Strand(HistorySurveillance):
     name = models.CharField(max_length=100)
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Disability(models.Model):
+class Disability(HistorySurveillance):
     name = models.CharField(max_length=100)
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class IndigenousGroup(models.Model):
+class IndigenousGroup(HistorySurveillance):
     name = models.CharField(max_length=100)
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
 
 
-class Location(models.Model):
+class Location(HistorySurveillance):
     location = models.TextField()
     description = models.TextField()
     is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])

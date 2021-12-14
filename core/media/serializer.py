@@ -39,11 +39,6 @@ class PhotoSerializer(serializers.RelatedField, ABC):
 
 
 class FileSerializer(serializers.ModelSerializer):
-    uuid = serializers.CharField(read_only=True)
-    name = serializers.CharField(read_only=True)
-    date = serializers.DateTimeField(read_only=True)
-    mime_type = serializers.CharField(read_only=True)
-    src = serializers.FileField(read_only=True)
 
     def to_representation(self, value):
         thumbnail = static('images/icon-file.png')
@@ -54,7 +49,7 @@ class FileSerializer(serializers.ModelSerializer):
             thumbnail = resize(slice_media(value.file.url), 'thumbnail-xl', 'media_resize') if value.file else thumbnail
 
         return {
-            'uuid': value.uuid,
+            'user': value.user.id,
             'name': value.name,
             'date': value.date,
             'mime_type': value.mime_type,

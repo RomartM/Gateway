@@ -12,6 +12,7 @@ from core.user.utils import profile_photo_hash_upload
 
 
 class Photo(models.Model):
+    #user = models.ForeignKey("user.User", on_delete=models.DO_NOTHING, related_name="user_photo")
     name = models.CharField(max_length=300, blank=True)
     date = models.DateTimeField(default=timezone.now, blank=True)
     description = models.TextField(blank=True, default='')
@@ -34,7 +35,7 @@ class AllowedFileType(models.Model):
 
 
 class File(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey("user.User", on_delete=models.DO_NOTHING, related_name="user_photo")
     name = models.CharField(max_length=300, blank=True)
     date = models.DateTimeField(default=timezone.now, blank=True)
     description = models.TextField(blank=True, default='')
