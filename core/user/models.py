@@ -5,7 +5,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from core.media.models import File
-from core.user.academiclevel import AcademicLevel
+from core.settings.academiclevel import AcademicLevel
+from core.settings.models import Strand, Campus, Course, MediaRequirements, Disability, IndigenousGroup
 from core.user.managers import UserManager
 from core.user.utils import profile_photo_hash_upload, IndexedTimeStampedModel
 
@@ -64,36 +65,47 @@ class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
         return self.email
 
 
-# class Profile(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     lrn = models.IntegerField(default=0)
-#     id_number = models.IntegerField(default=0, unique=True)
-#     birthdate = models.DateField()
-#     sex_at_birth = models.CharField(max_length=80, default='')
-#     citizenship = models.CharField(max_length=80, default='')
-#     civil_status = models.CharField(max_length=80, default='Single')
-#     indigenous_group = models.CharField(max_length=80, default='')
-#
-#     region = models.CharField(max_length=80, default='')
-#     province = models.CharField(max_length=80, default='')
-#     zip = models.CharField(max_length=80, default='')
-#
-#     town_city_municipality = models.CharField(max_length=80, default='')
-#     barangay = models.CharField(max_length=80, default='')
-#     street_purok = models.CharField(max_length=80, default='')
-#     mobile_number = models.CharField(max_length=80, default='')
-#
-#     dswd_4psNumber = models.CharField(max_length=80, default='')
-#
-#     # def __str__(self):
-#     #     return "%d %d " % (self.lrn,self.id_number)
+# TODO: Id number composition (dash excl.)
+#  YY: Last 2 digit,
+#  CC: Campus Code,
+#  S: First Digit Semester Code,
+#  0: Incremental Student ID
+#  YY-CC-S-00000
+class PersonalInformation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    id_number = models.CharField(max_length=11, unique=True)
+    sex_at_birth = models.CharField(choices=(
+        ('m', 'Male'),
+        ('f', 'Female')
+    ), max_length=1)
+    birthday = models.DateField()
+    citizenship = models.CharField(max_length=80, default='')
+    lrn = models.CharField(max_length=80, default='')
+    civil_status = models.CharField(choices=(
+        ('s', 'Single'),
+        ('m', 'Married'),
+        ('w', 'Widow'),
+        ('sp', 'Separated'),
+    ), max_length=20)
+    disability = models.ManyToManyField(Disability)
+    religion = models.CharField(max_length=80, default='')
 
-class Strand(models.Model):
-    name = models.CharField(max_length=100)
-    is_enable = models.BooleanField(default=True)
+    # Address Information
+    region = models.CharField(max_length=80, default='')
+    province = models.CharField(max_length=80, default='')
+    zip = models.CharField(max_length=80, default='')
+    town_city_municipality = models.CharField(max_length=80, default='')
+    barangay = models.CharField(max_length=80, default='')
+    street_purok = models.CharField(max_length=80, default='')
+
+    has_indigenous_group = models.BooleanField(default=False)
+    indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING)
+    dswd_4psNumber = models.CharField(max_length=80, default='')
+    signature = models.ForeignKey(File, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class AcademicHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     school_name = models.CharField(name="Name of School", max_length=80)
     year_from = models.IntegerField(default=0)
     year_to = models.IntegerField(default=0)
@@ -111,46 +123,8 @@ class AcademicHistory(models.Model):
     street_purok = models.CharField(max_length=80, default='')
 
 
-class Disability(models.Model):
-    name = models.CharField(max_length=100)
-    is_enable = models.BooleanField(default=True)
-
-
-class IndigenousGroup(models.Model):
-    name = models.CharField(max_length=100)
-    is_enable = models.BooleanField(default=True)
-
-
-class Campus(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.TextField()
-    is_enable = models.BooleanField(default=True)
-
-
-class Requirements(models.Model):
-    content = models.TextField()
-    file_type = models.CharField(max_length=80)
-    is_enable = models.BooleanField(default=True)
-
-
-class AcademicMediaRequirements(models.Model):
-    file = models.ManyToManyField(File)
-    allowed_file_type = models.CharField(max_length=30, default='')
-    max = models.IntegerField(default=1)
-    is_enable = models.BooleanField(default=True)
-
-
-class Course(models.Model):
-    name = models.CharField(max_length=100, default='')
-    abbreviation = models.CharField(max_length=30, default='')
-    description = models.TextField()
-    requirements = models.ManyToManyField(Requirements)
-    department_id = models.ForeignKey("Department", on_delete=models.CASCADE)
-    level = models.IntegerField(choices=AcademicLevel.get_choices())
-    is_enable = models.BooleanField(default=True)
-
-
 class Academic(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     education_status = models.IntegerField(choices=(
         (0, ''),
         (1, 'Senior High Graduate'),
@@ -161,60 +135,4 @@ class Academic(models.Model):
     academic_history = models.ManyToManyField(AcademicHistory)
     campus_preference = models.ForeignKey(Campus, on_delete=models.DO_NOTHING, related_name="campus_preference")
     course_preference = models.ForeignKey(Course, on_delete=models.DO_NOTHING, related_name="course_preference")
-    media_requirements = models.ManyToManyField(AcademicMediaRequirements)
-
-
-class PersonalInformation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sex_at_birth = models.CharField(choices=(
-        ('m', 'Male'),
-        ('f', 'Female')
-    ), max_length=1)
-    birthday = models.DateField()
-    citizenship = models.CharField(max_length=80, default='')
-    lrn = models.CharField(max_length=80, default='')
-    civil_status = models.CharField(choices=(
-        ('s', 'single'),
-        ('m', 'married'),
-        ('w', 'widow'),
-        ('sp', 'separated'),
-    ), max_length=20)
-    disability = models.ManyToManyField(Disability)
-    religion = models.CharField(max_length=80, default='')
-
-    # Address Information
-    region = models.CharField(max_length=80, default='')
-    province = models.CharField(max_length=80, default='')
-    zip = models.CharField(max_length=80, default='')
-    town_city_municipality = models.CharField(max_length=80, default='')
-    barangay = models.CharField(max_length=80, default='')
-    street_purok = models.CharField(max_length=80, default='')
-
-    has_indigenous_group = models.BooleanField(default=False)
-    indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING)
-    dswd_4psNumber = models.CharField(max_length=80, default='')
-
-    # education_status = models.CharField(max_length=80, default='')
-    # name_of_school = models.CharField(max_length=80, default='')
-
-    # # Address Information
-    # school_region = models.CharField(max_length=80, default='')
-    # school_province = models.CharField(max_length=80, default='')
-    # school_zip = models.CharField(max_length=80, default='')
-    # school_town_city_municipality = models.CharField(max_length=80, default='')
-    # school_barangay = models.CharField(max_length=80, default='')
-    # school_street_purok = models.CharField(max_length=80, default='')
-
-
-class DocumentaryRequirements(models.Model):
-    pass
-
-
-class Preference(models.Model):
-    pass
-
-
-class Department(models.Model):
-    Department_name = models.CharField(max_length=80, default='')
-    description = models.CharField(max_length=80, default='')
-
+    media_requirements = models.ManyToManyField(MediaRequirements)

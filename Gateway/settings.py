@@ -53,10 +53,11 @@ INSTALLED_APPS = [
     'import_export',
 
     # Core Apps,
+    'core.settings',
     'core.media',
     'core.user',
     'core.admission',
-    # 'core.application',
+    'core.application',
     'core.common',
 ]
 
