@@ -7,6 +7,7 @@ from simple_history.models import HistoricalRecords
 from core.media.models import File
 from core.settings.academiclevel import AcademicLevel
 from core.settings.models import Strand, Campus, Course, MediaRequirements, Disability, IndigenousGroup
+from core.uacs.models import Address
 from core.user.managers import UserManager
 from core.user.utils import profile_photo_hash_upload, IndexedTimeStampedModel
 
@@ -91,12 +92,7 @@ class PersonalInformation(models.Model):
     religion = models.CharField(max_length=80, default='')
 
     # Address Information
-    region = models.CharField(max_length=80, default='')
-    province = models.CharField(max_length=80, default='')
-    zip = models.CharField(max_length=80, default='')
-    town_city_municipality = models.CharField(max_length=80, default='')
-    barangay = models.CharField(max_length=80, default='')
-    street_purok = models.CharField(max_length=80, default='')
+    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, related_name="user_address")
 
     has_indigenous_group = models.BooleanField(default=False)
     indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING, blank=True, null=True)
@@ -115,12 +111,8 @@ class AcademicHistory(models.Model):
         (1, 'Private'),
     ))
     strand = models.ForeignKey(Strand, null=True, blank=True, on_delete=models.DO_NOTHING)
-    region = models.CharField(max_length=80, default='')
-    province = models.CharField(max_length=80, default='')
-    zip = models.CharField(max_length=80, default='')
-    town_city_municipality = models.CharField(max_length=80, default='')
-    barangay = models.CharField(max_length=80, default='')
-    street_purok = models.CharField(max_length=80, default='')
+    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, related_name="school_address",
+                                blank=True, null=True)
 
 
 class Academic(models.Model):

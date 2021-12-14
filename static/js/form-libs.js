@@ -10,6 +10,6 @@ function checkbox(instance){
 instance.on("change", function(e){
     checkbox(e.currentTarget)
 })
-instance.each(function(e){
-    checkbox(e[0])
+instance.map(function(i, e){
+    checkbox(e)
 })

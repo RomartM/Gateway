@@ -1,7 +1,7 @@
 from django import forms
 
 from Gateway.base_form import ModelLabelForm
-from core.user.models import User, PersonalInformation
+from core.user.models import User, PersonalInformation, AcademicHistory
 
 
 class UserForm(ModelLabelForm):
@@ -16,8 +16,7 @@ class PersonalInformationForm(ModelLabelForm):
     class Meta:
         model = PersonalInformation
         fields = ('id_number', 'sex_at_birth', 'birthday', 'citizenship', 'lrn',
-                  'civil_status', 'disability', 'religion', 'region', 'province',
-                  'zip', 'town_city_municipality', 'barangay', 'street_purok',
+                  'civil_status', 'disability', 'religion', 'address',
                   'has_indigenous_group', 'indigenous_group', 'dswd_4psNumber',)
 
     def __init__(self, *args, **kwargs):
@@ -29,6 +28,13 @@ class PersonalInformationForm(ModelLabelForm):
     def clean_id_number(self):
         instance = getattr(self, 'instance', None)
         return instance.id_number
+
+
+class AcademicHistoryForm(forms.ModelForm):
+
+    class Meta:
+        models = AcademicHistory
+        fields = ('school_name', 'year_from', 'year_to', 'level', 'type_of_school', 'strand', 'address',)
 
 
 class Academic(forms.Form):
