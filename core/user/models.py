@@ -97,7 +97,6 @@ class PersonalInformation(models.Model):
     has_indigenous_group = models.BooleanField(default=False)
     indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING, blank=True, null=True)
     dswd_4psNumber = models.CharField(max_length=80, default='')
-    signature = models.ForeignKey(File, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class AcademicHistory(models.Model):
@@ -115,6 +114,12 @@ class AcademicHistory(models.Model):
                                 blank=True, null=True)
 
 
+class AcademicPreference(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    campus_preference = models.ForeignKey(Campus, on_delete=models.DO_NOTHING, related_name="campus_preference")
+    course_preference = models.ForeignKey(Course, on_delete=models.DO_NOTHING, related_name="course_preference")
+
+
 class Academic(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     education_status = models.IntegerField(choices=(
@@ -125,6 +130,5 @@ class Academic(models.Model):
         (4, 'Lifelong Learner'),
     ), default=0)
     academic_history = models.ManyToManyField(AcademicHistory)
-    campus_preference = models.ForeignKey(Campus, on_delete=models.DO_NOTHING, related_name="campus_preference")
-    course_preference = models.ForeignKey(Course, on_delete=models.DO_NOTHING, related_name="course_preference")
+    preference = models.ManyToManyField(AcademicPreference)
     media_requirements = models.ManyToManyField(MediaRequirements)

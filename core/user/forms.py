@@ -1,7 +1,7 @@
 from django import forms
 
 from Gateway.base_form import ModelLabelForm
-from core.user.models import User, PersonalInformation, AcademicHistory
+from core.user.models import User, PersonalInformation, AcademicHistory, Academic
 
 
 class UserForm(ModelLabelForm):
@@ -33,10 +33,14 @@ class PersonalInformationForm(ModelLabelForm):
 class AcademicHistoryForm(forms.ModelForm):
 
     class Meta:
-        models = AcademicHistory
-        fields = ('school_name', 'year_from', 'year_to', 'level', 'type_of_school', 'strand', 'address',)
+        model = AcademicHistory
+        fields = ('year_from', 'year_to', 'level', 'type_of_school',
+                  'strand', 'address',)
 
 
-class Academic(forms.Form):
-    pass
+class AcademicForm(forms.ModelForm):
+
+    class Meta:
+        model = Academic
+        fields = ('education_status', 'academic_history', 'preference', 'media_requirements', )
 
