@@ -1,24 +1,22 @@
 from django.db import models
 
 # Create your models here.
-from core.user.models import User, Course
+from core.admission.models import Admission
+from core.admission.status import AdmissionStatus
+from core.settings.models import Course, Requirements, MediaRequirements, Semester
+from core.user.models import User
 
 
-class Document(models.Model):
-    document_name = models.CharField(max_length=80, default='')
-    filetype = models.CharField(max_length=80, default='')
-    description = models.CharField(max_length=80, default='')
-
-
-class Requirement(models.Model):
-    document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
-    level = models.CharField(max_length=80, default='')
-    courseIid = models.ForeignKey(Course, on_delete=models.CASCADE)
-    # dropdown
-
-
-class Submission(models.Model):
-    document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
-    requirement_id = models.ForeignKey(Requirement, on_delete=models.CASCADE)
-    version = models.IntegerField()
+# TODO: Implement history instance
+class Gateway(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
+    semester = models.ForeignKey(Semester, on_delete=models.DO_NOTHING)
+    admission = models.ForeignKey(Admission, on_delete=models.DO_NOTHING, null=True, blank=True)
+    media_requirements = models.ForeignKey(MediaRequirements, on_delete=models.DO_NOTHING)  # Files
+    status = models.IntegerField(choices=AdmissionStatus.get_choices(), default=AdmissionStatus.PENDING)
+    remarks = models.TextField(blank=True)
+    officer_media_files = models.ForeignKey(MediaRequirements, on_delete=models.DO_NOTHING, related_name="officer_media_files")  # Files
+    updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="gateway_updated_by")
+    updated_time = models.DateTimeField(auto_now=True)
 
