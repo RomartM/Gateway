@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
 from core.admission.forms import ApplyForm
+from core.user.forms import UserForm, PersonalInformationForm
 
 
 def apply(request):

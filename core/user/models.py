@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -6,17 +7,17 @@ from simple_history.models import HistoricalRecords
 
 from core.media.models import File
 from core.settings.academiclevel import AcademicLevel
-from core.settings.models import Strand, Campus, Course, MediaRequirements, Disability, IndigenousGroup
+from core.settings.models import Strand, Campus, Course, MediaRequirements, Disability, IndigenousGroup, Nationality
 from core.uacs.models import Address
 from core.user.managers import UserManager
 from core.user.utils import profile_photo_hash_upload, IndexedTimeStampedModel
 
 
 class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
-    photo = models.ImageField(upload_to=profile_photo_hash_upload)
     first_name = models.CharField(max_length=80, default='')
     middle_name = models.CharField(max_length=80, default='')
     last_name = models.CharField(max_length=80, default='')
+    photo = models.ImageField(upload_to=profile_photo_hash_upload, blank=True, null=True)
     suffix_name = models.IntegerField(choices=(
         (0, '--'),
         (1, 'Jr.'),
@@ -48,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
     USERNAME_FIELD = "email"
 
     def get_full_name(self):
-        return "%s %s %s" % (self.first_name.title(), self.last_name.title(), self.suffix_name.title())
+        return "%s %s %s" % (self.first_name.title(), self.last_name.title(), self.get_suffix_name_display())
 
     def get_short_name(self):
         return self.first_name.title()
@@ -62,8 +63,24 @@ class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
     # def is_role(self, role):
     #     return bool(self.role == role)
 
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Send an email to this user."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+
     def __str__(self):
         return self.email
+
+
+class Citizenship(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    nationality = models.ForeignKey(Nationality, on_delete=models.DO_NOTHING, blank=True, null=True)
+    dual_citizenship = models.BooleanField(default=False)
+    by_birth = models.BooleanField(default=False)
+    by_naturalization = models.BooleanField(default=False)
+
+
+class UserAddress(Address):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 # TODO: Id number composition (dash excl.)
@@ -73,15 +90,13 @@ class User(AbstractBaseUser, PermissionsMixin, IndexedTimeStampedModel):
 #  0: Incremental Student ID
 #  YY-CC-S-00000
 class PersonalInformation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    id_number = models.CharField(max_length=11, unique=True, help_text='Readonly')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    id_number = models.CharField(max_length=11, unique=True, null=True)
     sex_at_birth = models.CharField(choices=(
         ('m', 'Male'),
         ('f', 'Female')
     ), max_length=1)
-    birthday = models.DateField()
-    citizenship = models.CharField(max_length=80, default='')
-    lrn = models.CharField(max_length=80, default='')
+    birthday = models.DateField(blank=True, null=True)
     civil_status = models.CharField(choices=(
         ('s', 'Single'),
         ('m', 'Married'),
@@ -92,10 +107,11 @@ class PersonalInformation(models.Model):
     religion = models.CharField(max_length=80, default='')
 
     # Address Information
-    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, related_name="user_address")
+    address = models.ManyToManyField(UserAddress)
 
     has_indigenous_group = models.BooleanField(default=False)
     indigenous_group = models.ForeignKey(IndigenousGroup, on_delete=models.DO_NOTHING, blank=True, null=True)
+    other_indigenous_group = models.CharField(max_length=80, default='')
     dswd_4psNumber = models.CharField(max_length=80, default='')
 
 
@@ -121,7 +137,7 @@ class AcademicPreference(models.Model):
 
 
 class Academic(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     education_status = models.IntegerField(choices=(
         (0, ''),
         (1, 'Senior High Graduate'),
@@ -129,6 +145,7 @@ class Academic(models.Model):
         (3, 'BukSU Returnee'),
         (4, 'Lifelong Learner'),
     ), default=0)
+    lrn = models.CharField(max_length=80, default='')
     academic_history = models.ManyToManyField(AcademicHistory)
     preference = models.ManyToManyField(AcademicPreference)
     media_requirements = models.ManyToManyField(MediaRequirements)

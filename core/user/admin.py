@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
+from import_export.admin import ImportExportModelAdmin
 
-from .models import User
+from .models import User, PersonalInformation, Academic, Citizenship
 
 
 class CustomUserAdmin(UserAdmin):
@@ -72,4 +73,19 @@ class CustomUserAdmin(UserAdmin):
         return queryset
 
 
+class CitizenshipAdmin(ImportExportModelAdmin):
+    pass
+
+
+class PersonalInformationAdmin(ImportExportModelAdmin):
+    pass
+
+
+class AcademicAdmin(ImportExportModelAdmin):
+    pass
+
+
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Citizenship, CitizenshipAdmin)
+admin.site.register(PersonalInformation, PersonalInformationAdmin)
+admin.site.register(Academic, AcademicAdmin)

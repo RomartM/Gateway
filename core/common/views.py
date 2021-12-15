@@ -12,7 +12,7 @@ def homepage(request):
     context['value1'] = 3
     context['value2'] = 4
 
-    form = PersonalInformationForm(instance=request.user.personalinformation_set.first())
-
-    context['form'] = form
+    # form = PersonalInformationForm(instance=request.user.personalinformation)
+    #
+    # context['form'] = form
     return render(request, 'home.html', context)

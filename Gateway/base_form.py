@@ -34,15 +34,16 @@ class CustomLabelBoundField(forms.boundfield.BoundField):
         id_ = widget.attrs.get('id') or self.auto_id
         if id_:
             id_for_label = widget.id_for_label(id_)
+            attrs = {**(attrs or {}), 'class': 'form-label'}
             if id_for_label:
-                attrs = {**(attrs or {}), 'for': id_for_label, 'class': 'form-label'}
+                attrs = {**(attrs or {}), 'for': id_for_label}
             if self.field.required and hasattr(self.form, 'required_css_class'):
                 attrs = attrs or {}
                 if 'class' in attrs:
                     attrs['class'] += ' ' + self.form.required_css_class
                 else:
                     attrs['class'] = self.form.required_css_class
-            attrs = flatatt(attrs) if attrs else ''
+            attrs = flatatt(attrs) if attrs else 'aa'
             contents = format_html(LABEL_TEMPLATE, attrs, contents.replace(':', ''))
         else:
             contents = conditional_escape(contents)

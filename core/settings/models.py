@@ -13,6 +13,9 @@ class Campus(HistorySurveillance):
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
+    def __str__(self):
+        return self.name
+
 
 class Course(HistorySurveillance):
     name = models.CharField(max_length=100, unique=True)
@@ -27,12 +30,18 @@ class Course(HistorySurveillance):
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
+    def __str__(self):
+        return self.name
+
 
 class Department(HistorySurveillance):
     name = models.CharField(max_length=80, default='')
     description = models.CharField(max_length=80, default='')
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.name
 
 
 # TODO: Make is_active unique when true
@@ -50,6 +59,9 @@ class Semester(HistorySurveillance):
     # Gateway
     enrollment_start = models.DateTimeField()
     enrollment_end = models.DateTimeField()
+    # Modality
+    modality_start = models.DateTimeField()
+    modality_end = models.DateTimeField()
     # Score Uploading
     score_uploading_start = models.DateTimeField()
     score_uploading_end = models.DateTimeField()
@@ -63,12 +75,18 @@ class Semester(HistorySurveillance):
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
+    def __str__(self):
+        return self.name
+
 
 class Requirements(HistorySurveillance):
     content = models.TextField()
     file_type = models.CharField(max_length=80)
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.content
 
 
 class MediaRequirements(HistorySurveillance):
@@ -78,11 +96,17 @@ class MediaRequirements(HistorySurveillance):
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
+    def __str__(self):
+        return self.allowed_file_type
+
 
 class Strand(HistorySurveillance):
     name = models.CharField(max_length=100)
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.name
 
 
 class Disability(HistorySurveillance):
@@ -90,11 +114,17 @@ class Disability(HistorySurveillance):
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
 
+    def __str__(self):
+        return self.name
+
 
 class IndigenousGroup(HistorySurveillance):
     name = models.CharField(max_length=100)
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.name
 
 
 class Location(HistorySurveillance):
@@ -102,3 +132,15 @@ class Location(HistorySurveillance):
     description = models.TextField()
     is_enable = models.BooleanField(default=True)
     history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.location
+
+
+class Nationality(HistorySurveillance):
+    name = models.CharField(max_length=100)
+    is_enable = models.BooleanField(default=True)
+    history = HistoricalRecords(excluded_fields=['history_instance'])
+
+    def __str__(self):
+        return self.name

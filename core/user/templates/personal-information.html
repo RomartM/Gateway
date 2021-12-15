@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load common_extras %}
+{% block head %}
+    <link href="{% static 'css/form.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/personal-info.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ user_form.non_field_errors }}
+        {{ citizenship_form.non_field_errors }}
+        {{ personal_information_form.non_field_errors }}
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">User Information</div>
+            </div>
+            <div class="card-body">
+                {{ user_form }}
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">Citizenship Information</div>
+            </div>
+            <div class="card-body">
+                {{ citizenship_form }}
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">Personal Information</div>
+            </div>
+            <div class="card-body">
+                {{ personal_information_form }}
+            </div>
+        </div>
+    <button type="submit" class="btn btn-primary" id="form_submit">Submit</button>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/form-libs.js' %}"></script>
+    <script src="{% static 'js/personal-info.js' %}"></script>
+{% endblock %}

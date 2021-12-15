@@ -5,10 +5,12 @@ from deepdiff.helper import json_convertor_default
 from django.contrib.admin.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields.files import ImageFieldFile
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from pytz import unicode
 from simple_history.signals import post_create_historical_record
 
+from core.user.models import User, PersonalInformation, Academic, Citizenship
 from core.user.utils import get_repr
 
 
@@ -72,7 +74,7 @@ def do_log_entry(sender, **kwargs):
 
         default_mapping = {
             datetime.date: lambda x: x.isoformat(),
-            ImageFieldFile: lambda n: n.fileno()
+            ImageFieldFile: lambda n: '' if not n else n.fileno()
         }
 
         json_message = json.dumps({'messages': messages},
@@ -90,3 +92,26 @@ def do_log_entry(sender, **kwargs):
     if history_instance_new.history_change_reason is None:
         history_instance_new.history_change_reason = str('LE_ID:%s' % log_instance.id)
         history_instance_new.save()
+
+
+@receiver(post_save, sender=User)
+def save_user(sender, instance, **kwargs):
+    if hasattr(instance, 'citizenship'):
+        instance.citizenship.save()
+    else:
+        Citizenship.objects.create(user=instance)
+    if hasattr(instance, 'personalinformation'):
+        instance.personalinformation.save()
+    else:
+        PersonalInformation.objects.create(user=instance)
+    if hasattr(instance, 'academic'):
+        instance.academic.save()
+    else:
+        Academic.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def update_user(sender, instance, created, **kwargs):
+    instance.citizenship.save()
+    instance.personalinformation.save()
+    instance.academic.save()

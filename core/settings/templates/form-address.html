@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load common_extras %}
+{% block head %}
+    <link href="{% static 'css/form.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/form-address.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">Address Information</div>
+            </div>
+            <div class="card-body">
+                {{ form }}
+            </div>
+        </div>
+    <button type="submit" class="btn btn-primary" id="form_submit">Submit</button>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/form-libs.js' %}"></script>
+    <script src="{% static 'js/form-address.js' %}"></script>
+{% endblock %}

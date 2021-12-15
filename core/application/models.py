@@ -10,8 +10,14 @@ from core.settings.utils import HistorySurveillance
 from core.user.models import User
 
 
+# TODO: Use Assessment Module
+class LearningModality(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 class Gateway(HistorySurveillance):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    modality = models.ForeignKey(LearningModality, on_delete=models.DO_NOTHING)
     course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
     semester = models.ForeignKey(Semester, on_delete=models.DO_NOTHING)
     admission = models.ForeignKey(Admission, on_delete=models.DO_NOTHING, null=True, blank=True)
